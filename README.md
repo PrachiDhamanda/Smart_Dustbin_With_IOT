@@ -1,4 +1,16 @@
-# Smart Dustbin Project
+🌍 Smart Dustbin Project
+Overview 🚀
+Welcome to the Smart Dustbin Manager project! This system uses the ESP32 to monitor the fill level of a dustbin and manage the lid status, all through a sleek, web-based dashboard. Say goodbye to overflowing bins with automated alerts and control!
+
+Key Features 🛠️:
+Real-time Monitoring: Keep track of the bin’s fill level with precision.
+
+Remote Lid Control: Open/close the lid from anywhere.# Smart Dustbin Project
+
+## Overview
+This project is a Smart Dustbin Manager using ESP32 to monitor the fill level of a dustbin and manage the lid status. The system is controlled via a web-based dashboard. 
+
+### Features:# Smart Dustbin Project
 
 ## Overview
 This project is a Smart Dustbin Manager using ESP32 to monitor the fill level of a dustbin and manage the lid status. The system is controlled via a web-based dashboard. 
@@ -33,16 +45,23 @@ This project is a Smart Dustbin Manager using ESP32 to monitor the fill level of
 ## Arduino Code
 The Arduino code is saved as `smart_dustbin.ino`. This code runs on an ESP32 to interact with the sensors and handle HTTP requests for the web dashboard.
 
-## Images
-![Smart Dustbin](images/bin_image1.jpg)
-![Bin Monitoring](images/bin_image2.jpg)
+### Smart Dustbin Images
 
-### Frontend Dashboard Screenshots:
-<img src="Images/addbin.png" alt="Add Bin">
-<img src="Images/dashboard.png" alt="Dashboard View">
-<img src="Images/profile.png" alt="User Profile">
-<img src="Images/signinsignup.png" alt="Sign In/Sign Up">
+| <img src="https://via.placeholder.com/300?text=Smart+Dustbin+Front" width="300"><br><b>Smart Dustbin - Front View</b> | <img src="https://via.placeholder.com/300?text=Bin+Monitoring+Top" width="300"><br><b>Bin Monitoring - Top View</b> | <img src="https://via.placeholder.com/300?text=Smart+Dustbin+Side" width="300"><br><b>Smart Dustbin - Side View</b> |
+|:----------------------------------------------------------------------------------:|:------------------------------------------------------------------------------:|:--------------------------------------------------------------:|
+| <img src="https://via.placeholder.com/300?text=Bin+Sensor+Tech" width="300"><br><b>Bin Sensor Technology</b> | <img src="https://via.placeholder.com/300?text=Servo+Motor+Control" width="300"><br><b>Servo Motor Control</b> | <img src="https://via.placeholder.com/300?text=Dustbin+Overview" width="300"><br><b>Smart Dustbin Overview</b> |
+
+
+
+
+### Frontend Dashboard Screenshots
+
+| <img src="Images/addbin.png" width="300"><br><b>Add Bin</b> | <img src="Images/dashboard.png" width="300"><br><b>Dashboard</b> |
+|:------------------------------------------------------------:|:----------------------------------------------------------------:|
+| <img src="Images/profile.png" width="300"><br><b>Profile</b> | <img src="Images/signinsignup.png" width="300"><br><b>Sign In / Sign Up</b> |
 
 
 ## License
 This project is licensed under the MIT License.
+
+
