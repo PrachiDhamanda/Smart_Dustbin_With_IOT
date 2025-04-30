@@ -35,9 +35,9 @@ The Arduino code is saved as `smart_dustbin.ino`. This code runs on an ESP32 to 
 
 ### Smart Dustbin Images
 
-| <img src="Images/bin_image1.jpg" width="300"><br><b>Smart Dustbin - Front View</b> | <img src="Images/bin_image2.jpg" width="300"><br><b>Bin Monitoring - Top View</b> | <img src="Images/addbin.png" width="300"><br><b>Add Bin Screen</b> |
+| <img src="https://via.placeholder.com/300?text=Smart+Dustbin+Front" width="300"><br><b>Smart Dustbin - Front View</b> | <img src="https://via.placeholder.com/300?text=Bin+Monitoring+Top" width="300"><br><b>Bin Monitoring - Top View</b> | <img src="https://via.placeholder.com/300?text=Smart+Dustbin+Side" width="300"><br><b>Smart Dustbin - Side View</b> |
 |:----------------------------------------------------------------------------------:|:------------------------------------------------------------------------------:|:--------------------------------------------------------------:|
-| <img src="Images/dashboard.png" width="300"><br><b>Dashboard</b> | <img src="Images/profile.png" width="300"><br><b>User Profile</b> | <img src="Images/signinsignup.png" width="300"><br><b>Authentication</b> |
+| <img src="https://via.placeholder.com/300?text=Bin+Sensor+Tech" width="300"><br><b>Bin Sensor Technology</b> | <img src="https://via.placeholder.com/300?text=Servo+Motor+Control" width="300"><br><b>Servo Motor Control</b> | <img src="https://via.placeholder.com/300?text=Dustbin+Overview" width="300"><br><b>Smart Dustbin Overview</b> |
 
 
 
