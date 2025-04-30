@@ -41,7 +41,7 @@ The Arduino code is saved as `smart_dustbin.ino`. This code runs on an ESP32 to 
 
 ### Frontend Dashboard Screenshots
 
-| <img src="Images/addbin.png" width="300"><br>Add Bin | <img src="Images/dashboard.png" width="300"><br>Dashboard |```
+| <img src="Images/addbin.png" width="300"><br>Add Bin | <img src="Images/dashboard.png" width="300"><br>Dashboard |  ```
 |:---------------------------------------------------:|:------------------------------------------------------:|
 | <img src="Images/profile.png" width="300"><br>Profile | <img src="Images/signinsignup.png" width="300"><br>Sign In / Sign Up |
 
