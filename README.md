@@ -33,11 +33,14 @@ This project is a Smart Dustbin Manager using ESP32 to monitor the fill level of
 ## Arduino Code
 The Arduino code is saved as `smart_dustbin.ino`. This code runs on an ESP32 to interact with the sensors and handle HTTP requests for the web dashboard.
 
-## Images
-![Smart Dustbin](images/bin_image1.jpg)
-![Bin Monitoring](images/bin_image2.jpg)
+### Smart Dustbin Images
 
-### Frontend Dashboard Screenshots:
+| <img src="Images/bin_image1.jpg" width="300"><br><b>Smart Dustbin - Front View</b> | <img src="Images/bin_image2.jpg" width="300"><br><b>Bin Monitoring - Top View</b> | <img src="Images/addbin.png" width="300"><br><b>Add Bin Screen</b> |
+|:----------------------------------------------------------------------------------:|:------------------------------------------------------------------------------:|:--------------------------------------------------------------:|
+| <img src="Images/dashboard.png" width="300"><br><b>Dashboard</b> | <img src="Images/profile.png" width="300"><br><b>User Profile</b> | <img src="Images/signinsignup.png" width="300"><br><b>Authentication</b> |
+
+
+
 
 ### Frontend Dashboard Screenshots
 
