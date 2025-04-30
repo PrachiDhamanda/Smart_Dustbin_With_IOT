@@ -38,10 +38,11 @@ The Arduino code is saved as `smart_dustbin.ino`. This code runs on an ESP32 to 
 ![Bin Monitoring](images/bin_image2.jpg)
 
 ### Frontend Dashboard Screenshots:
-1. ![Dashboard Image 1](images/dashboard_image1.jpg)
-2. ![Dashboard Image 2](images/dashboard_image2.jpg)
-3. ![Dashboard Image 3](images/dashboard_image3.jpg)
-4. ![Dashboard Image 4](images/dashboard_image4.jpg)
+<img src="images/addbin.png" alt="Add Bin">
+<img src="images/dashboard.png" alt="Dashboard View">
+<img src="images/profile.png" alt="User Profile">
+<img src="images/signinsignup.png" alt="Sign In/Sign Up">
+
 
 ## License
 This project is licensed under the MIT License.
