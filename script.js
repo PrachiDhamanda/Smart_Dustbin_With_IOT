@@ -197,7 +197,7 @@ class SmartBinManager {
         const newBin = {
             id: Date.now().toString(),
             name: nameInput.value.trim(),
-            ipAddress: ipValue.startsWith('http://') ? ipValue : `http://${ipValue}`,
+            ipAddress: ipValue.startsWith('https://') ? ipValue : `http://${ipValue}`,
             fillLevel: 0,
             lidStatus: 'closed',
             lastUpdated: new Date().toISOString(),
