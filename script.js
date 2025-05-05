@@ -197,15 +197,20 @@ class SmartBinManager {
             return;
         }
 
-        // Use the proxy WebSocket URL and pass the ESP32 IP as a query parameter
-        const esp32Ip = ipValue.includes(':') ? ipValue : `${ipValue}:81`;
-        const proxyUrl = `wss://${window.location.host}/ws-proxy?esp32Ip=${encodeURIComponent(esp32Ip)}`;
+        // Ensure port 81 is included in the WebSocket URL if not specified
+        let wsUrl = ipValue;
+        if (wsUrl.startsWith('ws://')) {
+            wsUrl = wsUrl.replace('ws://', '');
+        }
+        if (!wsUrl.includes(':')) {
+            wsUrl += ':81'; // Default to port 81 if no port is specified
+        }
+        wsUrl = `ws://${wsUrl}`;
 
         const newBin = {
             id: Date.now().toString(),
             name: nameInput.value.trim(),
-            ipAddress: proxyUrl, // Connect to proxy instead of ESP32 directly
-            esp32Ip: esp32Ip,   // Store the ESP32 IP for reference
+            ipAddress: wsUrl,
             fillLevel: 0,
             lidStatus: 'closed',
             lastUpdated: new Date().toISOString(),
@@ -277,7 +282,7 @@ class SmartBinManager {
                 bin.isLoading = false;
                 bin.error = 'WebSocket connection closed';
                 this.updateBinUI(bin);
-                setTimeout(() => this.connectWebSocket(bin), 1000);
+                setTimeout(() => this.connectWebSocket(bin), 1000); // Reduced reconnect delay to 1 second
             };
         } catch (error) {
             console.error(`Error setting up WebSocket for ${bin.name}:`, error);
@@ -357,7 +362,6 @@ class SmartBinManager {
                 id: bin.id,
                 name: bin.name,
                 ipAddress: bin.ipAddress,
-                esp32Ip: bin.esp32Ip,
                 fillLevel: bin.fillLevel,
                 lidStatus: bin.lidStatus,
                 lastUpdated: bin.lastUpdated,
@@ -461,7 +465,7 @@ class SmartBinManager {
                     </div>
                 </div>
                 <div class="bin-body">
-                    <div class="bin-ip">${bin.esp32Ip}</div>
+                    <div class="bin-ip">${bin.ipAddress}</div>
                     <div class="bin-status">
                         <div class="status-indicator"></div>
                         <span class="status-text">Lid is ${bin.lidStatus}</span>
