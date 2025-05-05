@@ -83,6 +83,11 @@ class SmartBinManager {
     }
 
     logout() {
+        this.bins.forEach(bin => {
+            if (bin.ws) {
+                bin.ws.close();
+            }
+        });
         this.currentUser = null;
         localStorage.removeItem('smartBinCurrentUser');
         this.showAuthForm();
@@ -140,7 +145,6 @@ class SmartBinManager {
             mainContent.classList.toggle('sidebar-active');
         });
 
-        // Close sidebar when clicking outside on mobile
         document.addEventListener('click', (e) => {
             if (window.innerWidth <= 767 && sidebar.classList.contains('active') &&
                 !sidebar.contains(e.target) && !hamburger.contains(e.target)) {
@@ -176,7 +180,6 @@ class SmartBinManager {
             document.getElementById('navProfile').classList.add('active');
         }
 
-        // Close sidebar on mobile after clicking a link
         if (window.innerWidth <= 767) {
             document.getElementById('sidebar').classList.remove('active');
             document.getElementById('hamburger').classList.remove('active');
@@ -194,14 +197,25 @@ class SmartBinManager {
             return;
         }
 
+        // Ensure port 81 is included in the WebSocket URL if not specified
+        let wsUrl = ipValue;
+        if (wsUrl.startsWith('ws://')) {
+            wsUrl = wsUrl.replace('ws://', '');
+        }
+        if (!wsUrl.includes(':')) {
+            wsUrl += ':81'; // Default to port 81 if no port is specified
+        }
+        wsUrl = `ws://${wsUrl}`;
+
         const newBin = {
             id: Date.now().toString(),
             name: nameInput.value.trim(),
-            ipAddress: ipValue.startsWith('https://') ? ipValue : `https://${ipValue}`,
+            ipAddress: wsUrl,
             fillLevel: 0,
             lidStatus: 'closed',
             lastUpdated: new Date().toISOString(),
-            isLoading: false
+            isLoading: false,
+            ws: null
         };
 
         this.bins.push(newBin);
@@ -209,11 +223,11 @@ class SmartBinManager {
         this.renderBins();
         nameInput.value = '';
         ipInput.value = '';
-        this.refreshBin(newBin);
+        this.connectWebSocket(newBin);
         this.showNotification(`Bin "${newBin.name}" added successfully!`, 'success');
     }
 
-    async refreshBin(bin) {
+    connectWebSocket(bin) {
         const binElement = document.getElementById(`bin-${bin.id}`);
         if (binElement) {
             const loadingIndicator = binElement.querySelector('.loading');
@@ -224,48 +238,74 @@ class SmartBinManager {
         this.updateBinUI(bin);
 
         try {
-            const response = await fetch(`${bin.ipAddress}/fill`, { timeout: 5000 });
-            if (!response.ok) throw new Error('Failed to fetch fill level');
+            bin.ws = new WebSocket(bin.ipAddress);
+            bin.ws.onopen = () => {
+                console.log(`WebSocket connected for ${bin.name}`);
+                bin.isLoading = false;
+                delete bin.error;
+                this.updateBinUI(bin);
+                this.showNotification(`Connected to ${bin.name} successfully!`, 'success');
+                bin.ws.send('get_state');
+            };
 
-            const fillLevel = parseInt(await response.text());
-            bin.fillLevel = Math.max(0, Math.min(100, fillLevel));
-            bin.lastUpdated = new Date().toISOString();
-            bin.isLoading = false;
-            delete bin.error;
+            bin.ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    bin.fillLevel = Math.max(0, Math.min(100, data.fillLevel));
+                    bin.lidStatus = data.lidStatus;
+                    bin.lastUpdated = new Date().toISOString();
+                    bin.isLoading = false;
+                    delete bin.error;
 
-            this.saveBins();
-            this.updateBinUI(bin);
-            this.checkAlerts();
+                    this.saveBins();
+                    this.updateBinUI(bin);
+                    this.checkAlerts();
+                } catch (error) {
+                    console.error(`Error parsing WebSocket message for ${bin.name}:`, error);
+                    bin.isLoading = false;
+                    bin.error = 'Failed to parse server response';
+                    this.updateBinUI(bin);
+                    this.showNotification(`Error updating ${bin.name}: ${error.message}`, 'error');
+                }
+            };
+
+            bin.ws.onerror = (error) => {
+                console.error(`WebSocket error for ${bin.name}:`, error);
+                bin.isLoading = false;
+                bin.error = 'WebSocket connection failed';
+                this.updateBinUI(bin);
+                this.showNotification(`Error connecting to ${bin.name}: Connection failed`, 'error');
+            };
+
+            bin.ws.onclose = () => {
+                console.log(`WebSocket closed for ${bin.name}`);
+                bin.isLoading = false;
+                bin.error = 'WebSocket connection closed';
+                this.updateBinUI(bin);
+                setTimeout(() => this.connectWebSocket(bin), 1000); // Reduced reconnect delay to 1 second
+            };
         } catch (error) {
-            console.error(`Error updating bin ${bin.name}:`, error);
+            console.error(`Error setting up WebSocket for ${bin.name}:`, error);
             bin.isLoading = false;
             bin.error = error.message;
             this.updateBinUI(bin);
-            this.showNotification(`Error updating ${bin.name}: ${error.message}`, 'error');
+            this.showNotification(`Error connecting to ${bin.name}: ${error.message}`, 'error');
         }
     }
 
-    async controlLid(binId, action) {
+    controlLid(binId, action) {
         const bin = this.bins.find(b => b.id === binId);
-        if (!bin) return;
+        if (!bin || !bin.ws || bin.ws.readyState !== WebSocket.OPEN) {
+            this.showNotification(`Error: ${bin ? bin.name : 'Bin'} is not connected`, 'error');
+            return;
+        }
 
         bin.isLoading = true;
         this.updateBinUI(bin);
 
         try {
-            const response = await fetch(`${bin.ipAddress}/lid/${action}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain' },
-                timeout: 5000
-            });
-
-            if (!response.ok) throw new Error(`Failed to ${action} lid`);
-
-            bin.lidStatus = action;
+            bin.ws.send(action === 'open' ? 'open_lid' : 'close_lid');
             bin.isLoading = false;
-            delete bin.error;
-
-            this.saveBins();
             this.updateBinUI(bin);
             this.showNotification(`${bin.name} lid ${action === 'open' ? 'opened' : 'closed'} successfully`, 'success');
         } catch (error) {
@@ -273,7 +313,17 @@ class SmartBinManager {
             bin.isLoading = false;
             bin.error = error.message;
             this.updateBinUI(bin);
-            this.showNotification(`Error: ${error.message}`, 'error');
+            this.showNotification(`Error controlling ${bin.name}: ${error.message}`, 'error');
+        }
+    }
+
+    refreshBin(bin) {
+        if (!bin.ws || bin.ws.readyState !== WebSocket.OPEN) {
+            this.connectWebSocket(bin);
+        } else {
+            bin.isLoading = true;
+            this.updateBinUI(bin);
+            bin.ws.send('get_state');
         }
     }
 
@@ -294,6 +344,10 @@ class SmartBinManager {
 
     deleteBin(id) {
         if (confirm('Are you sure you want to delete this bin?')) {
+            const bin = this.bins.find(b => b.id === id);
+            if (bin && bin.ws) {
+                bin.ws.close();
+            }
             this.bins = this.bins.filter(bin => bin.id !== id);
             this.saveBins();
             this.renderBins();
@@ -304,7 +358,16 @@ class SmartBinManager {
 
     saveBins() {
         if (this.currentUser) {
-            localStorage.setItem(`smartBins_${this.currentUser.username}`, JSON.stringify(this.bins));
+            localStorage.setItem(`smartBins_${this.currentUser.username}`, JSON.stringify(this.bins.map(bin => ({
+                id: bin.id,
+                name: bin.name,
+                ipAddress: bin.ipAddress,
+                fillLevel: bin.fillLevel,
+                lidStatus: bin.lidStatus,
+                lastUpdated: bin.lastUpdated,
+                isLoading: bin.isLoading,
+                error: bin.error
+            }))));
         }
     }
 
@@ -433,12 +496,7 @@ class SmartBinManager {
     }
 
     startMonitoring() {
-        setInterval(() => {
-            this.bins.forEach(bin => this.refreshBin(bin));
-        }, 30000);
-        setTimeout(() => {
-            this.bins.forEach(bin => this.refreshBin(bin));
-        }, 1000);
+        this.bins.forEach(bin => this.connectWebSocket(bin));
     }
 }
 
